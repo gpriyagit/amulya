@@ -1,42 +1,47 @@
 pipeline {
     agent any
+    
+    environment {
+        SONARQUBE = sonarqube
+        SONAR_TOKEN = sonar-token
+    }
 
     stages {
-        stage('Build') {
+        stage('Checkout') {
             steps {
-                // Build your application here
-                echo 'Building application...'
+                checkout scm
             }
         }
-        
-        stage('Test') {
-            steps {
-                // Run tests here
-                echo 'Running tests...'
-            }
-        }
-
         stage('SonarQube Analysis') {
             steps {
                 script {
-                    // Run SonarQube analysis
-                    echo 'Running SonarQube analysis...'
-                    sh 'sonar-scanner -Dsonar.projectKey=jenkins-code-analysis -Dsonar.host.url=http://13.233.91.14:9000'
+                    // Run the SonarQube analysis
+                    withSonarQubeEnv(SONARQUBE) {
+                        sh """
+                           mvn clean verify sonar:sonar \
+                           -Dsonar.projectKey=my-project \
+                           -Dsonar.host.url=http://43.204.141.140:9000 \
+                           -Dsonar.login=${SONAR_TOKEN}
+                        """
+                    }
                 }
             }
         }
-        
+        stage('Quality Gate') {
+            steps {
+                script {
+                    // Wait for the analysis to complete and check the Quality Gate
+                    timeout(time: 1, unit: 'HOURS') {
+                        waitForQualityGate abortPipeline: true
+                    }
+                }
+            }
+        }
         stage('Deploy') {
             steps {
-                // Deploy your application here
                 echo 'Deploying application...'
+                // Deployment commands here
             }
         }
     }
 }
-
-
-
-
-
-
