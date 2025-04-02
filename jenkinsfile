@@ -1,0 +1,42 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Build') {
+            steps {
+                // Build your application here
+                echo 'Building application...'
+            }
+        }
+        
+        stage('Test') {
+            steps {
+                // Run tests here
+                echo 'Running tests...'
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            steps {
+                script {
+                    // Run SonarQube analysis
+                    echo 'Running SonarQube analysis...'
+                    sh 'sonar-scanner -Dsonar.projectKey=jenkins-code-analysis -Dsonar.host.url=http://13.233.91.14:9000'
+                }
+            }
+        }
+        
+        stage('Deploy') {
+            steps {
+                // Deploy your application here
+                echo 'Deploying application...'
+            }
+        }
+    }
+}
+
+
+
+
+
+
