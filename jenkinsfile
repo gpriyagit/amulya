@@ -1,47 +1,15 @@
 pipeline {
-    agent any
-    
-    environment {
-        SONARQUBE = sonarqube
-        SONAR_TOKEN = sonar-token
+  agent { label 'linux' }
+  options {
+    buildDiscarder(logRotator(numToKeepStr: '5'))
+  }
+  stages {
+    stage('scan') {
+      steps {
+        WithSonarQubeEnv(installationName: 'sonarqube') {
+          sh './mvnw clean org.sonarsource.scanner.maven:Apache Maven:3.9.9:sonar'
+        }
+      }
     }
-
-    stages {
-        stage('Checkout') {
-            steps {
-                checkout scm
-            }
-        }
-        stage('SonarQube Analysis') {
-            steps {
-                script {
-                    // Run the SonarQube analysis
-                    withSonarQubeEnv(SONARQUBE) {
-                        sh """
-                           mvn clean verify sonar:sonar \
-                           -Dsonar.projectKey=my-project \
-                           -Dsonar.host.url=http://43.204.141.140:9000 \
-                           -Dsonar.login=${SONAR_TOKEN}
-                        """
-                    }
-                }
-            }
-        }
-        stage('Quality Gate') {
-            steps {
-                script {
-                    // Wait for the analysis to complete and check the Quality Gate
-                    timeout(time: 1, unit: 'HOURS') {
-                        waitForQualityGate abortPipeline: true
-                    }
-                }
-            }
-        }
-        stage('Deploy') {
-            steps {
-                echo 'Deploying application...'
-                // Deployment commands here
-            }
-        }
-    }
+  }
 }
