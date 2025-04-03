@@ -13,7 +13,7 @@
     <properties>
         <sonar.projectKey>sample-code</sonar.projectKey>
         <sonar.projectName>sample code</sonar.projectName>
-        <sonar.host.url>http://13.203.193.78:9000</sonar.host.url>
+        <sonar.host.url>http://3.110.188.79:9000</sonar.host.url>
         <sonar.login>sqp_186572d0c802fd452e04295a632d0176238bbbc6</sonar.login>
     </properties>
     
