@@ -7,9 +7,10 @@ pipeline {
     stage('scan') {
       steps {
         WithSonarQubeEnv(installationName: 'sonarqube') {
-          sh './mvnw clean org.sonarsource.scanner.maven:Apache Maven:3.9.9:sonar'
+          sh './mvnw clean sonar:sonar'
         }
       }
     }
   }
 }
+
